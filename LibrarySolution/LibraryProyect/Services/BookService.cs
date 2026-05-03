@@ -2,71 +2,43 @@
 using Library.Domain.Entities;
 using Library.Domain.Interfaces.Repositories;
 using Library.Domain.Interfaces.Services;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace LibraryProyect.Services
 {
     public class BookService : IBookService
     {
-        private readonly IBookRepository _repository;
-        private readonly IAuthorRepository _authorRepository;
+        private readonly IBookRepository _bookRepository;
 
-        public BookService(IBookRepository repository, IAuthorRepository authorRepository)
+        public BookService(IBookRepository bookRepository)
         {
-            _repository = repository;
-            _authorRepository = authorRepository;
+            _bookRepository = bookRepository;
         }
 
         public async Task<IEnumerable<Book>> GetAllAsync()
         {
-            return await _repository.GetAllAsync();
+            return await _bookRepository.GetAllAsync();
         }
 
         public async Task<Book?> GetByIdAsync(int id)
         {
-            return await _repository.GetByIdAsync(id);
+            return await _bookRepository.GetByIdAsync(id);
         }
 
-        public async Task<Book> CreateAsync(Book book)
+        public async Task<Book> AddAsync(Book book)
         {
-            if (string.IsNullOrWhiteSpace(book.Title))
-                throw new Exception("El título del libro es obligatorio.");
-
-            var existingBooks = await _repository.GetAllAsync();
-            if (existingBooks.Any(b => b.ISBN == book.ISBN))
-                throw new Exception("Ya existe un libro con ese ISBN.");
-
-            if (book.PublishedYear > DateTime.Now.Year)
-                throw new Exception("El año de publicación no puede ser mayor al actual.");
-
-            var author = await _authorRepository.GetByIdAsync(book.AuthorId);
-            if (author == null)
-                throw new Exception("El autor no existe.");
-
-            await _repository.AddAsync(book);
-            return book;
+            return await _bookRepository.AddAsync(book);
         }
 
-        public async Task<bool> UpdateAsync(int id, Book book)
+        public async Task<bool> UpdateAsync(Book book)
         {
-            var existing = await _repository.GetByIdAsync(id);
-            if (existing == null) return false;
-
-            existing.Title = book.Title;
-            existing.ISBN = book.ISBN;
-            existing.PublishedYear = book.PublishedYear;
-            existing.AuthorId = book.AuthorId;
-
-            await _repository.UpdateAsync(existing);
-            return true;
+            return await _bookRepository.UpdateAsync(book);
         }
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var existing = await _repository.GetByIdAsync(id);
-            if (existing == null) return false;
-
-            await _repository.DeleteAsync(id);
-            return true;
+            return await _bookRepository.DeleteAsync(id);
         }
     }
 }

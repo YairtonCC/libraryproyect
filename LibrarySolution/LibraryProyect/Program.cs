@@ -4,8 +4,15 @@ using Library.Domain.Interfaces.Services;
 using Library.DataAccess.Repositories;
 using LibraryProyect.Services;
 using AutoMapper;
+using LibraryProyect.Interfaces;
+using Library.DataAccess.Context;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// 🔹 DbContext
+builder.Services.AddDbContext<LibraryDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // 🔹 AutoMapper
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
@@ -37,16 +44,10 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 // 🔹 Middleware
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();

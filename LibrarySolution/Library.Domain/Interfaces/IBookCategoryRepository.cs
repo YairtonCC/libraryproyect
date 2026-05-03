@@ -3,11 +3,7 @@ using Library.Domain.Entities;
 
 namespace Library.Domain.Interfaces.Repositories
 {
-    public interface IBookCategoryRepository
+    public interface IBookCategoryRepository : IGenericRepository<BookCategory>
     {
-        Task<IEnumerable<BookCategory>> GetAllAsync();
-        Task<BookCategory?> GetByIdsAsync(int bookId, int categoryId);
-        Task AddAsync(BookCategory bookCategory);
-        Task DeleteAsync(int bookId, int categoryId);
     }
 }

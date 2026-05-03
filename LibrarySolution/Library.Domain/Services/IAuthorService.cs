@@ -1,4 +1,6 @@
 ﻿using Library.Domain.Entities;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Library.Domain.Interfaces.Services
 {
@@ -6,8 +8,8 @@ namespace Library.Domain.Interfaces.Services
     {
         Task<IEnumerable<Author>> GetAllAsync();
         Task<Author?> GetByIdAsync(int id);
-        Task<Author> CreateAsync(Author author);
-        Task<bool> UpdateAsync(int id, Author author);
+        Task<Author> AddAsync(Author author);
+        Task<bool> UpdateAsync(Author author);
         Task<bool> DeleteAsync(int id);
     }
 }
