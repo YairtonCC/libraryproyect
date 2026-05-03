@@ -2,46 +2,66 @@
 using Library.Domain.Entities;
 using Library.Domain.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace LibraryProyect.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class BookCategoriesController : ControllerBase
     {
-        private readonly IBookCategoryService _service;
+        private readonly IBookCategoryService _bookCategoryService;
 
-        public BookCategoriesController(IBookCategoryService service)
+        public BookCategoriesController(IBookCategoryService bookCategoryService)
         {
-            _service = service;
+            _bookCategoryService = bookCategoryService;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<BookCategory>>> GetBookCategories()
+        public async Task<ActionResult<IEnumerable<BookCategory>>> GetAll()
         {
-            return Ok(await _service.GetAllAsync());
+            var bookCategories = await _bookCategoryService.GetAllAsync();
+            return Ok(bookCategories);
         }
 
-        [HttpGet("{bookId}/{categoryId}")]
-        public async Task<ActionResult<BookCategory>> GetBookCategory(int bookId, int categoryId)
+        [HttpGet("{id}")]
+        public async Task<ActionResult<BookCategory>> GetById(int id)
         {
-            var bookCategory = await _service.GetByIdsAsync(bookId, categoryId);
-            if (bookCategory == null) return NotFound();
+            var bookCategory = await _bookCategoryService.GetByIdAsync(id);
+            if (bookCategory == null)
+                return NotFound();
+
             return Ok(bookCategory);
         }
 
         [HttpPost]
-        public async Task<ActionResult<BookCategory>> PostBookCategory(BookCategory bookCategory)
+        public async Task<ActionResult<BookCategory>> Create(BookCategory bookCategory)
         {
-            var created = await _service.CreateAsync(bookCategory);
-            return CreatedAtAction(nameof(GetBookCategory), new { bookId = created.BookId, categoryId = created.CategoryId }, created);
+            var created = await _bookCategoryService.AddAsync(bookCategory);
+            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
-        [HttpDelete("{bookId}/{categoryId}")]
-        public async Task<IActionResult> DeleteBookCategory(int bookId, int categoryId)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, BookCategory bookCategory)
         {
-            var deleted = await _service.DeleteAsync(bookId, categoryId);
-            if (!deleted) return NotFound();
+            if (id != bookCategory.Id)
+                return BadRequest();
+
+            var updated = await _bookCategoryService.UpdateAsync(bookCategory);
+            if (!updated)
+                return NotFound();
+
+            return NoContent(); 
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var deleted = await _bookCategoryService.DeleteAsync(id);
+            if (!deleted)
+                return NotFound();
+
             return NoContent();
         }
     }

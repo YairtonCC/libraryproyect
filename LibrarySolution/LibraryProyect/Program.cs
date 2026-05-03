@@ -3,8 +3,6 @@ using Library.Domain.Interfaces.Repositories;
 using Library.Domain.Interfaces.Services;
 using Library.DataAccess.Repositories;
 using LibraryProyect.Services;
-using AutoMapper;
-using LibraryProyect.Interfaces;
 using Library.DataAccess.Context;
 using Microsoft.EntityFrameworkCore;
 

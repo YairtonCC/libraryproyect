@@ -1,55 +1,64 @@
 ﻿using Library.Domain.Enities;
-using Library.Domain.Entities;
 using Library.Domain.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LibraryProyect.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class CategoriesController : ControllerBase
     {
-        private readonly ICategoryService _service;
+        private readonly ICategoryService _categoryService;
 
-        public CategoriesController(ICategoryService service)
+        public CategoriesController(ICategoryService categoryService)
         {
-            _service = service;
+            _categoryService = categoryService;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Category>>> GetCategories()
+        public async Task<ActionResult<IEnumerable<Category>>> GetAll()
         {
-            return Ok(await _service.GetAllAsync());
+            var categories = await _categoryService.GetAllAsync();
+            return Ok(categories);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Category>> GetCategory(int id)
+        public async Task<ActionResult<Category>> GetById(int id)
         {
-            var category = await _service.GetByIdAsync(id);
-            if (category == null) return NotFound();
+            var category = await _categoryService.GetByIdAsync(id);
+            if (category == null)
+                return NotFound();
+
             return Ok(category);
         }
 
         [HttpPost]
-        public async Task<ActionResult<Category>> PostCategory(Category category)
+        public async Task<ActionResult<Category>> Create(Category category)
         {
-            var created = await _service.CreateAsync(category);
-            return CreatedAtAction(nameof(GetCategory), new { id = created.Id }, created);
+            var created = await _categoryService.AddAsync(category);
+            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCategory(int id, Category category)
+        public async Task<IActionResult> Update(int id, Category category)
         {
-            var updated = await _service.UpdateAsync(id, category);
-            if (!updated) return NotFound();
+            if (id != category.Id)
+                return BadRequest();
+
+            var updated = await _categoryService.UpdateAsync(category);
+            if (!updated)
+                return NotFound();
+
             return NoContent();
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCategory(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var deleted = await _service.DeleteAsync(id);
-            if (!deleted) return NotFound();
+            var deleted = await _categoryService.DeleteAsync(id);
+            if (!deleted)
+                return NotFound();
+
             return NoContent();
         }
     }

@@ -1,7 +1,7 @@
 ﻿using Library.Domain.Enities;
-using Library.Domain.Entities;
 using Library.Domain.Interfaces.Repositories;
 using Library.Domain.Interfaces.Services;
+
 
 namespace LibraryProyect.Services
 {
@@ -24,37 +24,20 @@ namespace LibraryProyect.Services
             return await _repository.GetByIdAsync(id);
         }
 
-        public async Task<Category> CreateAsync(Category category)
+        public async Task<Category> AddAsync(Category category)
         {
-            if (string.IsNullOrWhiteSpace(category.Name))
-                throw new Exception("El nombre de la categoría es obligatorio.");
-
-            var existing = await _repository.GetAllAsync();
-            if (existing.Any(c => c.Name == category.Name))
-                throw new Exception("Ya existe una categoría con ese nombre.");
-
-            await _repository.AddAsync(category);
-            return category;
+            return await _repository.AddAsync(category);
         }
 
-        public async Task<bool> UpdateAsync(int id, Category category)
+        public async Task<bool> UpdateAsync(Category category)
         {
-            var existing = await _repository.GetByIdAsync(id);
-            if (existing == null) return false;
-
-            existing.Name = category.Name;
-
-            await _repository.UpdateAsync(existing);
-            return true;
+            return await _repository.UpdateAsync(category);
         }
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var existing = await _repository.GetByIdAsync(id);
-            if (existing == null) return false;
-
-            await _repository.DeleteAsync(id);
-            return true;
+            return await _repository.DeleteAsync(id);
         }
     }
 }
+

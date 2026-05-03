@@ -2,56 +2,67 @@
 using Library.Domain.Entities;
 using Library.Domain.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace LibraryProyect.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class BooksController : ControllerBase
     {
-        private readonly IBookService _service;
+        private readonly IBookService _bookService;
 
-        public BooksController(IBookService service)
+        public BooksController(IBookService bookService)
         {
-            _service = service;
+            _bookService = bookService;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Book>>> GetBooks()
+        public async Task<ActionResult<IEnumerable<Book>>> GetAll()
         {
-            return Ok(await _service.GetAllAsync());
+            var books = await _bookService.GetAllAsync();
+            return Ok(books);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Book>> GetBook(int id)
+        public async Task<ActionResult<Book>> GetById(int id)
         {
-            var book = await _service.GetByIdAsync(id);
-            if (book == null) return NotFound();
+            var book = await _bookService.GetByIdAsync(id);
+            if (book == null)
+                return NotFound();
+
             return Ok(book);
         }
 
         [HttpPost]
-        public async Task<ActionResult<Book>> PostBook(Book book)
+        public async Task<ActionResult<Book>> Create(Book book)
         {
-            var created = await _service.CreateAsync(book);
-            return CreatedAtAction(nameof(GetBook), new { id = created.Id }, created);
+            var created = await _bookService.AddAsync(book);
+            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutBook(int id, Book book)
+        public async Task<IActionResult> Update(int id, Book book)
         {
-            var updated = await _service.UpdateAsync(id, book);
-            if (!updated) return NotFound();
+            if (id != book.Id)
+                return BadRequest();
+
+            var updated = await _bookService.UpdateAsync(book);
+            if (!updated)
+                return NotFound();
+
             return NoContent();
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteBook(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var deleted = await _service.DeleteAsync(id);
-            if (!deleted) return NotFound();
+            var deleted = await _bookService.DeleteAsync(id);
+            if (!deleted)
+                return NotFound();
+
             return NoContent();
         }
     }
 }
-

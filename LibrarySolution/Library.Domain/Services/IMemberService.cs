@@ -1,5 +1,7 @@
 ﻿using Library.Domain.Enities;
 using Library.Domain.Entities;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Library.Domain.Interfaces.Services
 {
@@ -7,8 +9,8 @@ namespace Library.Domain.Interfaces.Services
     {
         Task<IEnumerable<Member>> GetAllAsync();
         Task<Member?> GetByIdAsync(int id);
-        Task<Member> CreateAsync(Member member);
-        Task<bool> UpdateAsync(int id, Member member);
+        Task<Member> AddAsync(Member member);
+        Task<bool> UpdateAsync(Member member);
         Task<bool> DeleteAsync(int id);
     }
 }

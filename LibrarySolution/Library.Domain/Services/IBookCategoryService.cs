@@ -1,13 +1,16 @@
 ﻿using Library.Domain.Enities.Library.Domain.Entities;
 using Library.Domain.Entities;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Library.Domain.Interfaces.Services
 {
     public interface IBookCategoryService
     {
         Task<IEnumerable<BookCategory>> GetAllAsync();
-        Task<BookCategory?> GetByIdsAsync(int bookId, int categoryId);
-        Task<BookCategory> CreateAsync(BookCategory bookCategory);
-        Task<bool> DeleteAsync(int bookId, int categoryId);
+        Task<BookCategory?> GetByIdAsync(int id);
+        Task<BookCategory> AddAsync(BookCategory bookCategory);
+        Task<bool> UpdateAsync(BookCategory bookCategory);
+        Task<bool> DeleteAsync(int id);
     }
 }
