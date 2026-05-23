@@ -1,4 +1,5 @@
-﻿using Library.Domain.Enum.Library.Domain.Entities;
+﻿
+using Library.Domain.Entities;
 
 namespace Library.Domain.DTOs
 {

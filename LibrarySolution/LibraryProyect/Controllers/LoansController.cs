@@ -23,8 +23,8 @@ namespace LibraryProyect.Controllers
         public async Task<ActionResult<IEnumerable<LoanDto>>> GetAll()
         {
             var loans = await _loanService.GetAllAsync();
-            // Mapear a DTO (puedes usar AutoMapper si ya lo tienes configurado)
             var loanDtos = new List<LoanDto>();
+
             foreach (var loan in loans)
             {
                 loanDtos.Add(new LoanDto
@@ -33,10 +33,11 @@ namespace LibraryProyect.Controllers
                     BookId = loan.BookId,
                     MemberId = loan.MemberId,
                     LoanDate = loan.LoanDate,
-                    ReturnDate = loan.ReturnDate ?? default,
+                    ReturnDate = loan.ReturnDate,
                     Status = loan.Status
                 });
             }
+
             return Ok(loanDtos);
         }
 
@@ -53,7 +54,7 @@ namespace LibraryProyect.Controllers
                 BookId = loan.BookId,
                 MemberId = loan.MemberId,
                 LoanDate = loan.LoanDate,
-                ReturnDate = loan.ReturnDate ?? default,
+                ReturnDate = loan.ReturnDate,
                 Status = loan.Status
             };
 
@@ -69,7 +70,7 @@ namespace LibraryProyect.Controllers
                 MemberId = dto.MemberId,
                 LoanDate = dto.LoanDate,
                 ReturnDate = dto.ReturnDate,
-                Status = 0 // activo por defecto
+                Status = LoanStatus.Active // por defecto activo
             };
 
             var created = await _loanService.AddAsync(loan);
@@ -80,7 +81,7 @@ namespace LibraryProyect.Controllers
                 BookId = created.BookId,
                 MemberId = created.MemberId,
                 LoanDate = created.LoanDate,
-                ReturnDate = created.ReturnDate ?? default,
+                ReturnDate = created.ReturnDate,
                 Status = created.Status
             };
 

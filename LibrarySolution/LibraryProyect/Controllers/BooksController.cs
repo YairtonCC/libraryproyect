@@ -1,4 +1,5 @@
-﻿using Library.Domain.Enities;
+﻿using Library.Domain.DTOs;
+using Library.Domain.Enities;
 using Library.Domain.Entities;
 using Library.Domain.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -19,34 +20,84 @@ namespace LibraryProyect.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Book>>> GetAll()
+        public async Task<ActionResult<IEnumerable<BookDto>>> GetAll()
         {
             var books = await _bookService.GetAllAsync();
-            return Ok(books);
+            var bookDtos = new List<BookDto>();
+
+            foreach (var book in books)
+            {
+                bookDtos.Add(new BookDto
+                {
+                    Id = book.Id,
+                    Title = book.Title,
+                    ISBN = book.ISBN,
+                    PublishedYear = book.PublishedYear,
+                    AuthorId = book.AuthorId
+                });
+            }
+
+            return Ok(bookDtos);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Book>> GetById(int id)
+        public async Task<ActionResult<BookDto>> GetById(int id)
         {
             var book = await _bookService.GetByIdAsync(id);
             if (book == null)
                 return NotFound();
 
-            return Ok(book);
+            var dto = new BookDto
+            {
+                Id = book.Id,
+                Title = book.Title,
+                ISBN = book.ISBN,
+                PublishedYear = book.PublishedYear,
+                AuthorId = book.AuthorId
+            };
+
+            return Ok(dto);
         }
 
         [HttpPost]
-        public async Task<ActionResult<Book>> Create(Book book)
+        public async Task<ActionResult<BookDto>> Create([FromBody] CreateBookDto dto)
         {
+            var book = new Book
+            {
+                Title = dto.Title,
+                ISBN = dto.ISBN,
+                PublishedYear = dto.PublishedYear,
+                AuthorId = dto.AuthorId
+            };
+
             var created = await _bookService.AddAsync(book);
-            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+
+            var resultDto = new BookDto
+            {
+                Id = created.Id,
+                Title = created.Title,
+                ISBN = created.ISBN,
+                PublishedYear = created.PublishedYear,
+                AuthorId = created.AuthorId
+            };
+
+            return CreatedAtAction(nameof(GetById), new { id = resultDto.Id }, resultDto);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, Book book)
+        public async Task<IActionResult> Update(int id, [FromBody] BookDto dto)
         {
-            if (id != book.Id)
+            if (id != dto.Id)
                 return BadRequest();
+
+            var book = new Book
+            {
+                Id = dto.Id,
+                Title = dto.Title,
+                ISBN = dto.ISBN,
+                PublishedYear = dto.PublishedYear,
+                AuthorId = dto.AuthorId
+            };
 
             var updated = await _bookService.UpdateAsync(book);
             if (!updated)

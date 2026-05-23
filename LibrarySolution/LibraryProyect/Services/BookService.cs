@@ -12,11 +12,16 @@ namespace LibraryProyect.Services
     {
         private readonly IBookRepository _bookRepository;
         private readonly IAuthorRepository _authorRepository;
+        private readonly ICategoryRepository _categoryRepository;
 
-        public BookService(IBookRepository bookRepository, IAuthorRepository authorRepository)
+        public BookService(
+            IBookRepository bookRepository,
+            IAuthorRepository authorRepository,
+            ICategoryRepository categoryRepository)
         {
             _bookRepository = bookRepository;
             _authorRepository = authorRepository;
+            _categoryRepository = categoryRepository;
         }
 
         public async Task<IEnumerable<Book>> GetAllAsync()
@@ -26,33 +31,43 @@ namespace LibraryProyect.Services
 
         public async Task<Book?> GetByIdAsync(int id)
         {
-            if (id <= 0)
-                throw new ArgumentException("El ID del libro debe ser mayor que cero.");
-
             return await _bookRepository.GetByIdAsync(id);
+        }
+
+        public async Task<IEnumerable<Book>> GetByAuthorIdAsync(int authorId)
+        {
+            return await _bookRepository.GetByAuthorIdAsync(authorId);
+        }
+
+        public async Task<IEnumerable<Book>> GetByCategoryIdAsync(int categoryId)
+        {
+            return await _bookRepository.GetByCategoryIdAsync(categoryId);
+        }
+
+        public async Task<Book?> GetByIsbnAsync(string isbn)
+        {
+            return await _bookRepository.GetByIsbnAsync(isbn);
         }
 
         public async Task<Book> AddAsync(Book book)
         {
+            // Validación: título obligatorio
             if (string.IsNullOrWhiteSpace(book.Title))
                 throw new ArgumentException("El título del libro es obligatorio.");
 
+            // Validación: ISBN obligatorio y único
             if (string.IsNullOrWhiteSpace(book.ISBN))
                 throw new ArgumentException("El ISBN es obligatorio.");
 
-            // Validar ISBN único
-            var existingBooks = await _bookRepository.GetAllAsync();
-            foreach (var b in existingBooks)
-            {
-                if (b.ISBN.Equals(book.ISBN, StringComparison.OrdinalIgnoreCase))
-                    throw new ArgumentException("Ya existe un libro con ese ISBN.");
-            }
+            var existing = await _bookRepository.GetByIsbnAsync(book.ISBN);
+            if (existing != null)
+                throw new ArgumentException("El ISBN ya existe.");
 
-            // Validar año de publicación
-            if (book.PublishedYear < 1500 || book.PublishedYear > DateTime.Now.Year)
+            // Validación: año de publicación válido
+            if (book.PublishedYear <= 0 || book.PublishedYear > DateTime.Now.Year)
                 throw new ArgumentException("El año de publicación es inválido.");
 
-            // Validar que el autor exista
+            // Validación: autor existente
             var author = await _authorRepository.GetByIdAsync(book.AuthorId);
             if (author == null)
                 throw new ArgumentException("El autor especificado no existe.");
@@ -62,26 +77,32 @@ namespace LibraryProyect.Services
 
         public async Task<bool> UpdateAsync(Book book)
         {
-            if (book.Id <= 0)
-                throw new ArgumentException("El ID del libro es inválido.");
-
+            // Validación: título obligatorio
             if (string.IsNullOrWhiteSpace(book.Title))
                 throw new ArgumentException("El título del libro es obligatorio.");
 
+            // Validación: ISBN obligatorio y único (excepto el mismo libro)
             if (string.IsNullOrWhiteSpace(book.ISBN))
                 throw new ArgumentException("El ISBN es obligatorio.");
 
-            if (book.PublishedYear < 1500 || book.PublishedYear > DateTime.Now.Year)
+            var existing = await _bookRepository.GetByIsbnAsync(book.ISBN);
+            if (existing != null && existing.Id != book.Id)
+                throw new ArgumentException("El ISBN ya está registrado por otro libro.");
+
+            // Validación: año de publicación válido
+            if (book.PublishedYear <= 0 || book.PublishedYear > DateTime.Now.Year)
                 throw new ArgumentException("El año de publicación es inválido.");
+
+            // Validación: autor existente
+            var author = await _authorRepository.GetByIdAsync(book.AuthorId);
+            if (author == null)
+                throw new ArgumentException("El autor especificado no existe.");
 
             return await _bookRepository.UpdateAsync(book);
         }
 
         public async Task<bool> DeleteAsync(int id)
         {
-            if (id <= 0)
-                throw new ArgumentException("El ID del libro debe ser mayor que cero.");
-
             return await _bookRepository.DeleteAsync(id);
         }
     }

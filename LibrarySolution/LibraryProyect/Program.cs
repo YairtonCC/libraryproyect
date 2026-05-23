@@ -12,6 +12,12 @@ var builder = WebApplication.CreateBuilder(args);
 // 🔹 DbContext
 builder.Services.AddDbContext<LibraryDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+    });
+
 
 // 🔹 AutoMapper
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));

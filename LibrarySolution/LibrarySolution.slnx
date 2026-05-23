@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/LibraryTests/">
+    <File Path="LoanServiceTests.cs" />
+  </Folder>
   <Project Path="Library.DataAccess/Library.DataAccess.csproj" />
   <Project Path="Library.Domain/Library.Domain.csproj" />
   <Project Path="LibraryProyect/LibraryProyect.csproj" />

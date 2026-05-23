@@ -23,47 +23,52 @@ namespace LibraryProyect.Services
 
         public async Task<Author?> GetByIdAsync(int id)
         {
-            if (id <= 0)
-                throw new ArgumentException("El ID debe ser mayor que cero.");
-
             return await _authorRepository.GetByIdAsync(id);
+        }
+
+        public async Task<IEnumerable<Author>> GetByNameAsync(string name)
+        {
+            return await _authorRepository.GetByNameAsync(name);
+        }
+
+        public async Task<IEnumerable<Author>> GetAuthorsWithBooksAsync()
+        {
+            return await _authorRepository.GetAuthorsWithBooksAsync();
         }
 
         public async Task<Author> AddAsync(Author author)
         {
+            // Validación: nombre obligatorio
             if (string.IsNullOrWhiteSpace(author.Name))
                 throw new ArgumentException("El nombre del autor es obligatorio.");
 
-            if (author.BirthDate == default)
-                throw new ArgumentException("La fecha de nacimiento es obligatoria.");
+            // Validación: fecha de nacimiento no futura
+            if (author.BirthDate > DateTime.Now)
+                throw new ArgumentException("La fecha de nacimiento no puede ser futura.");
 
-            // Validar duplicados
-            var existing = await _authorRepository.GetAllAsync();
-            foreach (var a in existing)
-            {
-                if (a.Name.Equals(author.Name, StringComparison.OrdinalIgnoreCase))
-                    throw new ArgumentException("Ya existe un autor con ese nombre.");
-            }
+            // Validación: evitar duplicados por nombre
+            var existing = await _authorRepository.GetByNameAsync(author.Name);
+            if (existing != null && existing.Any())
+                throw new ArgumentException("Ya existe un autor con ese nombre.");
 
             return await _authorRepository.AddAsync(author);
         }
 
         public async Task<bool> UpdateAsync(Author author)
         {
-            if (author.Id <= 0)
-                throw new ArgumentException("El ID del autor es inválido.");
-
+            // Validación: nombre obligatorio
             if (string.IsNullOrWhiteSpace(author.Name))
                 throw new ArgumentException("El nombre del autor es obligatorio.");
+
+            // Validación: fecha de nacimiento no futura
+            if (author.BirthDate > DateTime.Now)
+                throw new ArgumentException("La fecha de nacimiento no puede ser futura.");
 
             return await _authorRepository.UpdateAsync(author);
         }
 
         public async Task<bool> DeleteAsync(int id)
         {
-            if (id <= 0)
-                throw new ArgumentException("El ID debe ser mayor que cero.");
-
             return await _authorRepository.DeleteAsync(id);
         }
     }

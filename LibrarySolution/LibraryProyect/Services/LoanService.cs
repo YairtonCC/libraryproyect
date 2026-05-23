@@ -1,6 +1,5 @@
 ﻿using Library.Domain.Enities;
 using Library.Domain.Entities;
-using Library.Domain.Enum.Library.Domain.Entities;
 using Library.Domain.Interfaces.Repositories;
 using Library.Domain.Interfaces.Services;
 using System;
