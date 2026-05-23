@@ -5,6 +5,7 @@ using Library.DataAccess.Repositories;
 using LibraryProyect.Services;
 using Library.DataAccess.Context;
 using Microsoft.EntityFrameworkCore;
+using Library.DataAccess.Seeders; 
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,9 +44,21 @@ var app = builder.Build();
 
 // 🔹 Middleware
 app.UseSwagger();
-app.UseSwaggerUI();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Library API v1");
+    c.RoutePrefix = string.Empty; 
+});
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
+
+// 🔹 Ejecutar DataSeeder al iniciar
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<LibraryDbContext>();
+    await DataSeeder.SeedAsync(context);
+}
+
 app.Run();

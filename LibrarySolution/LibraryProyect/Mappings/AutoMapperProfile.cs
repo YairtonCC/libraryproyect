@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Library.Domain.DTOs;
 using Library.Domain.Enities;
-using Library.Domain.Enities.Library.Domain.Entities;
 using Library.Domain.Entities;
 
 namespace LibraryProyect.Mapping

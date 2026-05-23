@@ -1,9 +1,5 @@
-﻿using Library.Domain.Enities.Library.Domain.Entities;
-using Library.Domain.Entities;
-using Library.Domain.Interfaces.Repositories;
+﻿using Library.Domain.Interfaces.Repositories;
 using Library.Domain.Interfaces.Services;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace LibraryProyect.Services
 {

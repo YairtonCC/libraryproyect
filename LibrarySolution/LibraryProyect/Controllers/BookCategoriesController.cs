@@ -1,9 +1,6 @@
-﻿using Library.Domain.Enities.Library.Domain.Entities;
-using Library.Domain.Entities;
-using Library.Domain.Interfaces.Services;
+﻿using Library.Domain.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+
 
 namespace LibraryProyect.Controllers
 {

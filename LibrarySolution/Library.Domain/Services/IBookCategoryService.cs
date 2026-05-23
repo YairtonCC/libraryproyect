@@ -1,8 +1,4 @@
-﻿using Library.Domain.Enities.Library.Domain.Entities;
-using Library.Domain.Entities;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
+﻿
 namespace Library.Domain.Interfaces.Services
 {
     public interface IBookCategoryService
